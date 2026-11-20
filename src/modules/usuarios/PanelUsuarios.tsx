@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+
 import type { User } from "../../types/app";
+import { useEffect, useState } from "react"
 import { MoreHorizontalIcon } from "lucide-react"
 import { Button } from "../../components/ui/button";
 import {
@@ -22,7 +23,6 @@ import {
 } from "../../components/ui/pagination"
 import { Skeleton } from "../../components/ui/skeleton";
 
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,17 +30,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu"
-
 export function PanelUsuario({
   goDetail,
 }: {
   goDetail: (userId: number) => void;
-}) {
+}){
     const [usuarios, setUsuarios] = useState<User[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [nameFilter, setNameFilter] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
     const pageSize = 5;
+
     const pageCount = Math.ceil(usuarios.length / pageSize);
     const pageUsers = usuarios.slice(
         (currentPage - 1) * pageSize,
@@ -48,6 +49,7 @@ export function PanelUsuario({
     );
     const firstUser = usuarios.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
     const lastUser = Math.min(currentPage * pageSize, usuarios.length);
+
     useEffect(() => {
         async function obtenerUsuarios(): Promise<void> {
             try {
@@ -68,8 +70,9 @@ export function PanelUsuario({
 
         obtenerUsuarios();
     }, []);
+
     return (
-        <div className="flex w-full flex-col gap-6 px-4 py-5 my-5 sm:px-8 lg:px-10">
+        <div className="flex w-full flex-col gap-6 px-4 py-5 sm:px-8 lg:px-10">
             <section className="w-full max-w-6xl self-center">
                 <div className="overflow-hidden rounded-lg border">
                     <Table className="min-w-[1650px] table-fixed">
@@ -88,15 +91,34 @@ export function PanelUsuario({
                             </TableRow>
                         </TableHeader>
                         <TableBody aria-busy={isLoading}>
-
-                            { usuarios.length === 0 && (
+                            {isLoading && Array.from({ length: 5 }, (_, index) => (
+                                <TableRow key={`skeleton-${index}`} aria-hidden="true">
+                                    <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-4/5" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-4/5" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-4/5" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-4/5" /></TableCell>
+                                    <TableCell><Skeleton className="h-4 w-full" /></TableCell>
+                                    <TableCell><Skeleton className="ml-auto h-8 w-8" /></TableCell>
+                                </TableRow>
+                            ))}
+                            {!isLoading && loadError && (
                                 <TableRow>
-                                    <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
-                                        No se encontraron usuarios.
+                                    <TableCell colSpan={9} className="py-8 text-center text-destructive">
+                                        {loadError}
                                     </TableCell>
                                 </TableRow>
                             )}
-                            { pageUsers.map((user) => (
+                            {!isLoading && !loadError && usuarios.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
+                                        No se encontraron usuarios con ese nombre.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {!isLoading && !loadError && pageUsers.map((user) => (
                                 <TableRow key={user.id}>
                                     <TableCell className="align-top font-medium">{user.id}</TableCell>
                                     <TableCell className="whitespace-normal break-words align-top">{user.name}</TableCell>
@@ -174,8 +196,8 @@ export function PanelUsuario({
                             <PaginationItem>
                                 <PaginationPrevious
                                     href="#"
+                                    size='default'
                                     text="Anterior"
-                                    size= "default"
                                     aria-label="Ir a la página anterior"
                                     aria-disabled={currentPage === 1}
                                     tabIndex={currentPage === 1 ? -1 : undefined}
@@ -192,7 +214,7 @@ export function PanelUsuario({
                                     <PaginationItem key={page}>
                                         <PaginationLink
                                             href="#"
-                                            size= "default"
+                                            size='default'
                                             isActive={currentPage === page}
                                             aria-label={`Ir a la pagina ${page}`}
                                             onClick={(event) => {
@@ -209,7 +231,7 @@ export function PanelUsuario({
                                 <PaginationNext
                                     href="#"
                                     text="Siguiente"
-                                    size= "default"
+                                    size='default'
                                     aria-label="Ir a la página siguiente"
                                     aria-disabled={currentPage === pageCount || pageCount === 0}
                                     tabIndex={currentPage === pageCount || pageCount === 0 ? -1 : undefined}
@@ -225,5 +247,5 @@ export function PanelUsuario({
                 </div>
             </section>
         </div>
-    );
+    )
 }
