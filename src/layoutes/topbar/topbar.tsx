@@ -7,9 +7,9 @@ import {
 } from "../../components/ui/navigation-menu";
 import {navigation} from "../navigation";
 import type { Page, LayoutProps } from "../../types/app";
-import { Bold, User } from "lucide-react";
+import { User } from "lucide-react";
 
-export function TopBar ({page, setPage}: LayoutProps) {
+export function TopBar ({setPage}: LayoutProps) {
     const navigate = (nextPage: Page) => {
         setPage(nextPage); 
     }

@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DetalleUsuario } from "../modules/usuarios/DetalleUsuario";
-
 import "@testing-library/jest-dom/vitest";
 const user = {
   id: 1,
