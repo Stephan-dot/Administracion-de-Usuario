@@ -5,7 +5,7 @@ import { DetalleUsuario } from "./modules/usuarios/DetalleUsuario";
 import type { Page } from "./types/app";
 export default function App() {
   const [page, setPage] = useState<Page>("dashboard");
-  const [selectedUserId, setSelectedUserId] = useState(1);
+  const [selectedUserId, setSelectedUserId] = useState<number>(1);
   const content = useMemo(()=>{
     if (page === "dashboard")
       return (
@@ -18,7 +18,7 @@ export default function App() {
       );
     if(page == 'detail')
       return(
-        <DetalleUsuario goBack={() => setPage("dashboard")} />
+        <DetalleUsuario userId={selectedUserId} goBack={() => setPage("dashboard")} />
       );
   },[page, selectedUserId])
   return (
