@@ -30,7 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { Filter } from "../../components/Filter";
+import { Filter } from "../../components/FIlter";
 export function PanelUsuario({
   goDetail,
 }: {
