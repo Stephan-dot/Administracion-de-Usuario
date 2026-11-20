@@ -29,7 +29,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
+} from "../../components/ui/dropdown-menu";
+import { Filter } from "../../components/Filter";
 export function PanelUsuario({
   goDetail,
 }: {
@@ -41,14 +42,16 @@ export function PanelUsuario({
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState<string | null>(null);
     const pageSize = 5;
-
-    const pageCount = Math.ceil(usuarios.length / pageSize);
-    const pageUsers = usuarios.slice(
+    const filteredUsers = usuarios.filter((user) =>
+        user.name.toLocaleLowerCase().includes(nameFilter.trim().toLocaleLowerCase()),
+    );
+    const pageCount = Math.ceil(filteredUsers.length / pageSize);
+    const pageUsers = filteredUsers.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize,
     );
-    const firstUser = usuarios.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-    const lastUser = Math.min(currentPage * pageSize, usuarios.length);
+    const firstUser = filteredUsers.length === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const lastUser = Math.min(currentPage * pageSize, filteredUsers.length);
 
     useEffect(() => {
         async function obtenerUsuarios(): Promise<void> {
@@ -73,6 +76,15 @@ export function PanelUsuario({
 
     return (
         <div className="flex w-full flex-col gap-6 px-4 py-5 sm:px-8 lg:px-10">
+            <div className="flex w-full max-w-6xl items-end justify-between gap-4 self-center">
+                <Filter
+                    value={nameFilter}
+                    onValueChange={(value) => {
+                        setNameFilter(value);
+                        setCurrentPage(1);
+                    }}
+                />
+            </div>
             <section className="w-full max-w-6xl self-center">
                 <div className="overflow-hidden rounded-lg border">
                     <Table className="min-w-[1650px] table-fixed">
@@ -111,7 +123,7 @@ export function PanelUsuario({
                                     </TableCell>
                                 </TableRow>
                             )}
-                            {!isLoading && !loadError && usuarios.length === 0 && (
+                            {!isLoading && !loadError && filteredUsers.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
                                         No se encontraron usuarios con ese nombre.
@@ -181,7 +193,7 @@ export function PanelUsuario({
                             <TableRow>
                                 <TableCell colSpan={8}>Total</TableCell>
                                 <TableCell className="text-right">
-                                    {isLoading ? <Skeleton className="ml-auto h-4 w-8" /> : usuarios.length}
+                                    {isLoading ? <Skeleton className="ml-auto h-4 w-8" /> : filteredUsers.length}
                                 </TableCell>
                             </TableRow>
                         </TableFooter>
@@ -189,7 +201,7 @@ export function PanelUsuario({
                 </div>
                 <div className="mt-4 flex flex-col items-center justify-between gap-3 sm:flex-row">
                     <p className="text-sm text-muted-foreground">
-                        Mostrando {firstUser}-{lastUser} de {usuarios.length} usuarios
+                        Mostrando {firstUser}-{lastUser} de {filteredUsers.length} usuarios
                     </p>
                     <Pagination className="mx-0 w-auto justify-end">
                         <PaginationContent>
